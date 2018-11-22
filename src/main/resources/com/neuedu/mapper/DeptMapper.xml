@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.mapper.DeptMapper">
+
+    <!--查询所有部门-->
+
+    <resultMap id="DeptEmp" type="Dept">
+        <id property="DeptEmp" column="DeptEmp"/>
+        <result property="dname" column="dname"/>
+        <result property="location" column="location"/>
+        <collection property="empList" ofType="Emp" >
+            <id property="emp_id" column="emp_id"/>
+            <result property="name" column="name"/>
+            <result property="phone" column="phone"/>
+            <result property="sex" column="sex"/>
+            <result property="salary" column="salary"/>
+            <result property="dept_id" column="dept_id"/>
+        </collection>
+    </resultMap>
+
+
+
+    <select id="listDept" resultMap="DeptEmp">select * from e_dept</select>
+
+    <!--根据id删除部门-->
+    <delete id="deleteDeptById" >delete from e_dept where dept_id = #{dept_id}</delete>
+
+
+
+    <insert id="saveDept">insert into e_dept (dname,location)  values ( #{dname}, #{location})</insert>
+
+
+    <update id="updateDept">update  e_dept set dname = #{dname} ,location = #{location}  where dept_id = #{dept_id}  </update>
+
+    <select id="selectDeptById" resultType="com.neuedu.entity.Dept">select * from e_dept where dept_id = #{dept_id}</select>
+
+    <delete id="deleteDeptAll">delete from e_dept where dept_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">#{ids}</foreach>
+    </delete>
+
+
+</mapper>

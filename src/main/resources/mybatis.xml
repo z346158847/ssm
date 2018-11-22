@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--可以加密-->
+    <!--<properties resource="jdbc.properties">
+        <property name="driverClassName" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="maxActive" value="${maxActive}"/>
+    </properties>-->
+
+    <!--打印日志-->
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <!--assocication,collection打开延迟加载的开关-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!--将将积极加载改为按需加载-->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+
+    <!--可以给entity下的对象取别名-->
+    <typeAliases>
+        <!--自定义别名
+        <typeAlias type="com.workntity.Emp" alias="Emp"/>
+        扫包，类名为别名-->
+        <package name="com.neuedu.entity"/>
+    </typeAliases>
+    <plugins>
+        <!--分页插件拦截器-->
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!--当该参数设置为 true 时，pageNum<=0 时会查询第一页，pageNum>pages（超过总数时）
+            ，会查询最后一页。默认false 时，直接根据参数进行查询。-->
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
+    
+</configuration>

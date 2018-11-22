@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.mapper.UserMapper">
+
+
+    <select id="getUserByUsername" resultType="com.neuedu.entity.User">select * from e_user where username = #{username}</select>
+
+
+    <insert id="saveUser">insert into e_user (username,password)  values ( #{username}, #{password})</insert>
+
+    <!--根据id删除部门
+    <delete id="deleteDeptById" >delete from e_dept where dept_id = #{dept_id}</delete>
+
+
+
+    <update id="updateDept">update  e_dept set dname = #{dname} ,location = #{location}  where dept_id = #{dept_id}  </update>
+
+    <select id="selectDeptById" resultType="com.workntity.Dept">select * from e_ept where dept_id = #{dept_id}</select>-->
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--mvc使用的容器是ioc的子容器，共享对象-->
+    <!--配置spring的扫包-->
+    <context:component-scan base-package="com.neuedu"/>
+
+    <!--整合mybatis开始-->
+    <!-- 引入配置文件 -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:jdbc.properties" />
+    </bean>
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="maxActive" value="${maxActive}"/>
+
+    </bean>
+    <!--配置sqlSession工厂,spring和MyBatis完美整合-->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--关联数据源对象-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置myBatis配置文件的路径-->
+        <property name="configLocation" value="classpath:mybatis.xml"/>
+    </bean>
+    <!--配置自动扫描mapper的工具类,mapper的实现类我们不用管了-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--配置自动扫描mapper的包-->
+        <property name="basePackage" value="com.neuedu.mapper"/>
+        <!--配置sqlSessionFactory的name-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"/>
+    </bean>
+    <!--整合myBatis结束-->
+
+    <!--配置事务开始-->
+    <!--配置事务管理器对象-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--配置事务通知-->
+    <tx:advice id="transactionInterceptor" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="list*" propagation="SUPPORTS"/>
+            <tx:method name="get*" propagation="SUPPORTS"/>
+            <tx:method name="save*" />
+            <tx:method name="update*"/>
+            <!--<tx:method name="*"/>-->
+
+        </tx:attributes>
+    </tx:advice>
+    <!--使用aop将事务管理器切入到service层-->
+    <aop:config>
+        <aop:pointcut id="service" expression="execution(* com.neuedu.service..*.*(..))"/>
+        <aop:advisor advice-ref="transactionInterceptor" pointcut-ref="service"/>
+    </aop:config>
+    <!--配置事务结束-->
+
+    <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+
+
+
+</beans>

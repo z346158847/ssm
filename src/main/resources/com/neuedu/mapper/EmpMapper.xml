@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.mapper.EmpMapper">
+
+    <resultMap id="EmpDept" type="com.neuedu.entity.Emp">
+        <id property="emp_id" column="emp_id"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="sex" column="sex"/>
+        <result property="salary" column="salary"/>
+        <result property="dept_id" column="dept_id"/>
+        <association property="dept" javaType="com.neuedu.entity.Dept">
+            <id property="dept_id" column="dept_id"/>
+            <result property="dname" column="dname"/>
+            <result property="location" column="location"/>
+        </association>
+    </resultMap>
+
+    <!--查询所有部门-->
+    <select id="listEmp"
+            resultMap="EmpDept">select emp_id,name,phone,sex,salary,e.dept_id,d.dept_id,dname,location from e_emp e inner join e_dept d on e.dept_id = d.dept_id</select>
+
+    <delete id="deleteEmpByDeptId">delete from e_emp where dept_id = #{dept_id}</delete>
+
+    <delete id="deleteAllByDeptId">delete from e_emp where dept_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">#{ids}</foreach>
+    </delete>
+
+    <delete id="deleteEmpById">delete from e_emp where emp_id = #{emp_id}</delete>
+
+    <insert id="saveEmp">insert into e_emp (name,phone,sex,salary,dept_id) values (#{name},#{phone},#{sex},#{salary},#{dept_id})</insert>
+
+    <update id="updateEmp">update e_emp set name = #{name},phone=#{phone},sex=#{sex},salary=#{salary},dept_id=#{dept_id} where emp_id=#{emp_id}</update>
+
+    <!--分布查询-->
+    <resultMap id="DeptEmp" type="Emp">
+        <id property="emp_id" column="emp_id"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="sex" column="sex"/>
+        <result property="salary" column="salary"/>
+        <association property="dept" select="com.neuedu.mapper.DeptMapper.selectDeptById" column="dept_id">
+
+        </association>
+
+    </resultMap>
+
+    
+    <select id="selectEmpById" resultMap="DeptEmp">select * from e_emp where emp_id=#{emp_id} </select>
+
+   <!-- <delete id="deleteEmpAll">delete from e_emp where emp_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">#{ids}</foreach>
+    </delete>-->
+
+    <delete id="deleteEmpAll">delete from e_emp where emp_id in
+     ( ${ids} )
+    </delete>
+
+    <select id="getEmpByName"
+            resultType="com.neuedu.entity.Emp">select * from e_emp where name like '%${name}%'</select>
+
+    <select id="getEmpByParam" resultType="com.neuedu.entity.Emp">
+        select * from e_emp 
+
+            <trim prefixOverrides="AND" prefix="WHERE">
+            <if test="name != null and name.length()>0 ">
+                 name = #{name}
+            </if>
+            <if test="phone != null and phone.length()>0">
+                 and phone = #{phone}
+            </if>
+            <if test="sex != null and sex.length()>0" >
+                 and sex = #{sex}
+            </if>
+            <if test="salary != null and salary.length()>0">
+                 and salary = #{salary}
+            </if>
+            </trim>
+
+    </select>
+
+
+</mapper>
